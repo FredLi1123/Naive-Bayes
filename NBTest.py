@@ -14,11 +14,11 @@ import helper
 
 def readcommandline(): 
     try: 
-        inputfile = open(sys.argv[1],'r') 
-        return inputfile 
-    except Exception as e: 
-        print('invalid file directory, try again') 
-        print('usage: python NBtrain.py <inputfile>') 
+        inputtestfile = open(sys.argv[1],'r') 
+        return inputtestfile 
+    except Exception: 
+        print('invalid testfile directory, try again') 
+        print('usage: python NBtrain.py <inputtestfile>') 
         sys.exit(2)
 
 def extractinfo(document):
@@ -28,8 +28,8 @@ def extractinfo(document):
     
     return labels, words
 
-def test(file,labels,counts):
-    currentdoc = file.readline()
+def test(testfile,V,labels,counts):
+    currentdoc = testfile.readline()
     diml = len(labels)
     
     correctdocs = 0
@@ -37,7 +37,6 @@ def test(file,labels,counts):
     
     while(currentdoc):
         current_labels, words = extractinfo(currentdoc)
-        dimw = len(words)
         
         maxprob = float('nan')
         testlabel = ''
@@ -49,29 +48,31 @@ def test(file,labels,counts):
             for w in words:
                 if l+','+w in counts.keys():
                     posterior = posterior+math.log(
-                        counts[l+','+w]+1)-math.log(counts[l+',*']+dimw)
+                        counts[l+','+w]+1)-math.log(counts[l+',*']+V)
                 else:
-                     posterior = posterior-math.log(counts[l+',*']+dimw)  
+                     posterior = posterior-math.log(counts[l+',*']+V)  
             
             maxprob = max(prior+posterior,maxprob)
             if maxprob == prior+posterior: testlabel = l
         
-        print(str(current_labels)+'\t'
-              +str(testlabel)+'\t'
+        print(str(current_labels)+' '
+              +str(testlabel)+' '
                   +str(round(maxprob,4)))
        
         if testlabel in current_labels: correctdocs += 1
         totaldocs += 1
         
-        currentdoc = file.readline()
+        currentdoc = testfile.readline()
     
-    file.close()
+    testfile.close()
     print('Percent correct:\t'+
           str(correctdocs)+'/'+str(totaldocs)+'='+
              str(round(correctdocs/totaldocs,4)))
 
 if __name__ == '__main__':
+    V = pickle.load(sys.stdin)
     labels = pickle.load(sys.stdin)
     counts = pickle.load(sys.stdin)
-    file = readcommandline()
-    test(file,labels,counts)
+    
+    testfile = readcommandline()
+    test(testfile,V,labels,counts)

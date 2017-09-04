@@ -7,17 +7,8 @@ Created on Sun Sep  3 16:28:33 2017
 """
 
 import sys
-import re
+import pickle
 import helper
-
-def readcommandline():
-    try:
-        inputfile = open(sys.argv[1],'r')
-        return inputfile
-    except Exception as e:
-        print('invalid file directory, try again')
-        print('usage: python NBTrain.py <inputfile>')
-        sys.exit(2)
         
 def extractinfo(document):
     parts = document.split('\t',1)
@@ -27,16 +18,49 @@ def extractinfo(document):
     return labels, words
 
 def updatecount(labels,words,counts):
+    if 'y=*' in counts:
+        counts['y=*'] = counts['y=*']+len(labels)
+    else:
+        counts['y=*'] = len(labels)
     
+    for l in labels:
+        key = 'y='+l
+        if key in counts:
+            counts[key] = counts[key]+1
+        else:
+            counts[key] = 1
+        
+        if key+',w=*' in counts:
+            counts[key+',w=*'] = counts[key+',w=*']+len(words)
+        else:
+            counts[key+',w=*'] = len(words)
+        
+        for w in words:
+            longkey = key+',w='+w
+            if longkey in counts:
+                counts[longkey] = counts[longkey]+1
+            else:
+                counts[longkey] = 1
+                      
 
-def train(filestream):
+def count(file):
     counts = {}
-    currentdoc = filestream.readline()
+    currentdoc = file.readline()
     
     while(currentdoc):   
+        labels, words = extractinfo(currentdoc)
+        updatecount(labels,words,counts)
+        
+        currentdoc = file.readline()
     
+    file.close()
+    
+    return counts
 
 if __name__ == '__main__':
+    file = sys.stdin
+    counts = count(file)
+    pickle.dump(counts,sys.stdout.buffer)
     
     
         

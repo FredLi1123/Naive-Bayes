@@ -18,25 +18,25 @@ def extractinfo(document):
     return labels, words
 
 def updatecount(labels,words,counts):
-    if 'y=*' in counts:
-        counts['y=*'] = counts['y=*']+len(labels)
+    if '*' in counts:
+        counts['*'] = counts['*']+len(labels)
     else:
-        counts['y=*'] = len(labels)
+        counts['*'] = len(labels)
     
     for l in labels:
-        key = 'y='+l
+        key = l
         if key in counts:
             counts[key] = counts[key]+1
         else:
             counts[key] = 1
         
-        if key+',w=*' in counts:
-            counts[key+',w=*'] = counts[key+',w=*']+len(words)
+        if key+',*' in counts:
+            counts[key+',*'] = counts[key+',*']+len(words)
         else:
-            counts[key+',w=*'] = len(words)
+            counts[key+',*'] = len(words)
         
         for w in words:
-            longkey = key+',w='+w
+            longkey = key+','+w
             if longkey in counts:
                 counts[longkey] = counts[longkey]+1
             else:
@@ -45,23 +45,26 @@ def updatecount(labels,words,counts):
 
 def count(file):
     counts = {}
+    total_labels = set()
     currentdoc = file.readline()
     
     while(currentdoc):   
         labels, words = extractinfo(currentdoc)
+        
+        total_labels = total_labels.union(set(labels))
         updatecount(labels,words,counts)
         
         currentdoc = file.readline()
     
     file.close()
     
-    return counts
+    return list(total_labels),counts
 
 if __name__ == '__main__':
     file = sys.stdin
-    counts = count(file)
-    pickle.dump(counts,sys.stdout.buffer)
-    
+    labels,counts = count(file)
+    pickle.dump(labels,sys.stdout)
+    pickle.dump(counts,sys.stdout)
     
         
     

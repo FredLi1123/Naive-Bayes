@@ -7,11 +7,13 @@ Created on Sun Sep  3 16:28:33 2017
 """
 
 import sys
-import pickle
 import helper
         
 def extractinfo(document):
+    # split a line to the string of labels and the document content
     parts = document.split('\t',1)
+    
+    # use helper functions to obtain the lists of labels and words
     labels = helper.get_labels(parts[0])
     words = helper.tokenizeDoc(parts[1])
     
@@ -41,7 +43,6 @@ def updatecount(labels,words,counts):
             else:
                 counts[longkey] = 1
                       
-
 def count(trainfile):
     counts = {}
     currentdoc = trainfile.readline()

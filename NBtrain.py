@@ -24,7 +24,6 @@ def updatecount(labels,words,counts):
         counts['*'] = len(labels)
     
     for l in labels:
-
         if l in counts:
             counts[l] = counts[l]+1
         else:

@@ -18,7 +18,7 @@ def readcommandline():
         return inputtestfile 
     except Exception: 
         print('invalid testfile directory, try again') 
-        print('usage: python NBtrain.py <inputtestfile>') 
+        print('usage: python NBtrain.py <testfile>') 
         sys.exit(2)
 
 def extractinfo(document):
@@ -46,11 +46,11 @@ def test(testfile,V,labels,counts):
             posterior = 0
             
             for w in words:
-                if l+','+w in counts.keys():
+                if l+','+w in counts:
                     posterior = posterior+math.log(
-                        counts[l+','+w]+1)-math.log(counts[l+',*']+V)
+                            counts[l+','+w]+1)-math.log(counts[l+',*']+V)
                 else:
-                     posterior = posterior-math.log(counts[l+',*']+V)  
+                     posterior = posterior-math.log(counts[l+',*']+V) 
             
             maxprob = max(prior+posterior,maxprob)
             if maxprob == prior+posterior: testlabel = l
@@ -73,6 +73,7 @@ if __name__ == '__main__':
     V = pickle.load(sys.stdin)
     labels = pickle.load(sys.stdin)
     counts = pickle.load(sys.stdin)
+    print(V)
     
     testfile = readcommandline()
     test(testfile,V,labels,counts)

@@ -95,6 +95,5 @@ def test(testfile,V,labels,counts):
 
 if __name__ == '__main__':
     V,labels,counts = readcounts()
-    
     testfile = readcommandline()
     test(testfile,V,labels,counts)

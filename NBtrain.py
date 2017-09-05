@@ -44,28 +44,31 @@ def updatecount(labels,words,counts):
 
 def count(trainfile):
     counts = {}
-    total_labels = set()
-    total_words = set()
     currentdoc = trainfile.readline()
     
-    while(currentdoc):   
+    while currentdoc:   
         labels, words = extractinfo(currentdoc)
-        total_labels = total_labels.union(set(labels))
-        total_words = total_words.union(set(words))
         updatecount(labels,words,counts)
-        
         currentdoc = trainfile.readline()
     
     trainfile.close()
     
-    return len(total_words),list(total_labels),counts
+    return counts
+
+def writecount(counts):
+    countstr = ''
+    
+    for key in counts:
+        countstr += (key+'\t'+str(counts[key])+'\n')
+    sys.stdout.write(countstr)
+    
 
 if __name__ == '__main__':
     trainfile = sys.stdin
-    V,labels,counts = count(trainfile)
-    pickle.dump(V,sys.stdout)
-    pickle.dump(labels,sys.stdout)
-    pickle.dump(counts,sys.stdout)
+    counts = count(trainfile)
+    writecount(counts)
+    
+    
     
         
     

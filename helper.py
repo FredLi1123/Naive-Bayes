@@ -12,6 +12,7 @@ def tokenizeDoc(cur_doc):
     return re.findall('\\w+',cur_doc)
 
 def get_labels(labelstr):
+    # get labels that end with "CAT" from the string of labels
     return [word for word in labelstr.split(',') 
             if word.endswith("CAT")]
     

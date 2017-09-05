@@ -20,22 +20,26 @@ def extractinfo(document):
     return labels, words
 
 def updatecount(labels,words,counts):
+    # update total document counts
     if '*' in counts:
         counts['*'] = counts['*']+len(labels)
     else:
         counts['*'] = len(labels)
     
+    # update document counts for a label
     for l in labels:
         if l in counts:
             counts[l] = counts[l]+1
         else:
             counts[l] = 1
         
+        # update total word counts for a label
         if l+',*' in counts:
             counts[l+',*'] = counts[l+',*']+len(words)
         else:
             counts[l+',*'] = len(words)
         
+        # update counts for a specific label-word combination
         for w in words:
             longkey = l+','+w
             if longkey in counts:
@@ -47,6 +51,7 @@ def count(trainfile):
     counts = {}
     currentdoc = trainfile.readline()
     
+    # read each line from document and update the hashmap
     while currentdoc:   
         labels, words = extractinfo(currentdoc)
         updatecount(labels,words,counts)
@@ -59,10 +64,10 @@ def count(trainfile):
 def writecount(counts):
     countstr = ''
     
+    # write each key-count combination in a line using tab-separated format
     for key in counts:
         countstr += (key+'\t'+str(counts[key])+'\n')
-    sys.stdout.write(countstr)
-    
+    sys.stdout.write(countstr)  
 
 if __name__ == '__main__':
     trainfile = sys.stdin

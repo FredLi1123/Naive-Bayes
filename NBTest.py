@@ -13,16 +13,23 @@ import helper
 def readcounts():
     labels = []
     counts = {}
+    # use a set to eliminate duplicated words
     words = set()
     
     line = sys.stdin.readline()
     while line:
+        # split each line by tab to get keys and counts 
         entry = line.split('\t')
         key = entry[0]
         count = entry[1]
         
+        # convert count to actual integer
         counts[key] = int(count)
         
+        """
+        if - collect all labels
+        elif - collect all words
+        """
         if ',' not in key and key != '*': 
             labels.append(key)
         elif ',' in key:
@@ -34,7 +41,11 @@ def readcounts():
     
     return len(words),labels,counts
             
-def readcommandline(): 
+def readcommandline():
+    """
+    read the testfile from the second command line argument;
+    the first argument is python script
+    """
     try: 
         inputtestfile = open(sys.argv[1],'r') 
         return inputtestfile 
@@ -44,6 +55,7 @@ def readcommandline():
         sys.exit(2)
 
 def extractinfo(document):
+    # similar to the function in training file
     parts = document.split('\t',1)
     labels = parts[0].split(',')
     words = helper.tokenizeDoc(parts[1])
@@ -52,7 +64,7 @@ def extractinfo(document):
 
 def test(testfile,V,labels,counts):
     currentdoc = testfile.readline()
-    diml = len(labels)
+    L = len(labels) # total number of labels
     
     correctdocs = 0
     totaldocs = 0
@@ -60,11 +72,17 @@ def test(testfile,V,labels,counts):
     while(currentdoc):
         current_labels, words = extractinfo(currentdoc)
         
-        maxprob = float('nan')
+        # if no label ending with "CAT", skip the document
+        if len([l for l in current_labels 
+                if l.endswith("CAT")]) == 0:
+            continue
+        
+        maxprob = math.nan
         testlabel = ''
         
+        # otherwise, calculate the smoothed log probability for each label
         for l in labels:
-            prior = math.log(counts[l]+1)-math.log(counts['*']+diml)
+            prior = math.log(counts[l]+1)-math.log(counts['*']+L)
             posterior = 0
             
             for w in words:
@@ -74,9 +92,11 @@ def test(testfile,V,labels,counts):
                 else:
                      posterior = posterior-math.log(counts[l+',*']+V) 
             
+            # update maximum log-probability and label assignment
             maxprob = max(prior+posterior,maxprob)
             if maxprob == prior+posterior: testlabel = l
         
+        # format the output - tab separated, 4-digit log probability
         print(str(current_labels)+'\t'
               +str(testlabel)+'\t'
                   +"{0:.4f}".format(maxprob))
@@ -87,6 +107,7 @@ def test(testfile,V,labels,counts):
         currentdoc = testfile.readline()
     
     testfile.close()
+    # calculate accuracy
     print('Percent correct:\t'+
           str(correctdocs)+'/'+str(totaldocs)+'='+
              "{0:.4f}".format(correctdocs/totaldocs))

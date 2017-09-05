@@ -6,7 +6,6 @@ Created on Sun Sep  3 21:15:51 2017
 @author: Nuoyu Li (nuoyul@andrew.cmu.edu)
 """
 
-from __future__ import division
 import sys
 import math
 import helper
@@ -18,7 +17,6 @@ def readcounts():
     
     line = sys.stdin.readline()
     while line:
-        print(line)
         entry = line.split('\t')
         key = entry[0]
         count = entry[1]
@@ -79,9 +77,9 @@ def test(testfile,V,labels,counts):
             maxprob = max(prior+posterior,maxprob)
             if maxprob == prior+posterior: testlabel = l
         
-        print(str(current_labels)+' '
-              +str(testlabel)+' '
-                  +str(round(maxprob,4)))
+        print(str(current_labels)+'\t'
+              +str(testlabel)+'\t'
+                  +"{0:.4f}".format(maxprob))
        
         if testlabel in current_labels: correctdocs += 1
         totaldocs += 1
@@ -91,7 +89,7 @@ def test(testfile,V,labels,counts):
     testfile.close()
     print('Percent correct:\t'+
           str(correctdocs)+'/'+str(totaldocs)+'='+
-             str(round(correctdocs/totaldocs,4)))
+             "{0:.4f}".format(correctdocs/totaldocs))
 
 if __name__ == '__main__':
     V,labels,counts = readcounts()

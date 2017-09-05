@@ -9,9 +9,33 @@ Created on Sun Sep  3 21:15:51 2017
 from __future__ import division
 import sys
 import math
-import pickle
 import helper
 
+def readcounts():
+    labels = []
+    counts = {}
+    words = set()
+    
+    line = sys.stdin.readline()
+    while line:
+        print(line)
+        entry = line.split('\t')
+        key = entry[0]
+        count = entry[1]
+        
+        counts[key] = int(count)
+        
+        if ',' not in key and key != '*': 
+            labels.append(key)
+        elif ',' in key:
+            word = key.split(',')[1]
+            if word != '*':
+                words.add(word)
+        
+        line = sys.stdin.readline()      
+    
+    return len(words),labels,counts
+            
 def readcommandline(): 
     try: 
         inputtestfile = open(sys.argv[1],'r') 
@@ -70,10 +94,7 @@ def test(testfile,V,labels,counts):
              str(round(correctdocs/totaldocs,4)))
 
 if __name__ == '__main__':
-    V = pickle.load(sys.stdin)
-    labels = pickle.load(sys.stdin)
-    counts = pickle.load(sys.stdin)
-    print(V)
+    V,labels,counts = readcounts()
     
     testfile = readcommandline()
     test(testfile,V,labels,counts)

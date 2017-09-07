@@ -6,6 +6,7 @@ Created on Sun Sep  3 16:28:33 2017
 @author: Nuoyu Li (nuoyul@andrew.cmu.edu)
 """
 
+from __future__ import division, print_function 
 import sys
 import helper
         
@@ -47,17 +48,19 @@ def updatecount(labels,words,counts):
             else:
                 counts[longkey] = 1
                       
-def count(trainfile):
+def count():
     counts = {}
-    currentdoc = trainfile.readline()
+    line = sys.stdin.readline()
     
     # read each line from document and update the hashmap
-    while currentdoc:   
-        labels, words = extractinfo(currentdoc)
+    while line:
+        #line = bytes(line, 'utf-8').decode('utf-8', 'ignore')
+        labels, words = extractinfo(line)
         updatecount(labels,words,counts)
-        currentdoc = trainfile.readline()
+        
+        line = sys.stdin.readline() 
     
-    trainfile.close()
+    sys.stdin.close()
     
     return counts
 
@@ -70,8 +73,7 @@ def writecount(counts):
     sys.stdout.write(countstr)  
 
 if __name__ == '__main__':
-    trainfile = sys.stdin
-    counts = count(trainfile)
+    counts = count()
     writecount(counts)
     
     

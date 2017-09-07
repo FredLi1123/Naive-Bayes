@@ -6,6 +6,7 @@ Created on Sun Sep  3 21:15:51 2017
 @author: Nuoyu Li (nuoyul@andrew.cmu.edu)
 """
 
+from __future__ import division, print_function 
 import sys
 import math
 import helper
@@ -19,7 +20,7 @@ def readcounts():
     line = sys.stdin.readline()
     while line:
         # split each line by tab to get keys and counts 
-        entry = line.split('\t')
+        entry = line.split('\t',1)
         key = entry[0]
         count = entry[1]
         
@@ -51,7 +52,7 @@ def readcommandline():
         return inputtestfile 
     except Exception: 
         print('invalid testfile directory, try again') 
-        print('usage: python NBtrain.py <testfile>') 
+        print('usage: python NBTest.py <testfile>') 
         sys.exit(2)
 
 def extractinfo(document):
@@ -69,15 +70,18 @@ def test(testfile,V,labels,counts):
     correctdocs = 0
     totaldocs = 0
     
-    while(currentdoc):
+    while currentdoc:
+        #currentdoc = bytes(currentdoc, 'utf-8').decode('utf-8', 'ignore')
         current_labels, words = extractinfo(currentdoc)
         
         # if no label ending with "CAT", skip the document
         if len([l for l in current_labels 
                 if l.endswith("CAT")]) == 0:
+            currentdoc = testfile.readline()
             continue
         
-        maxprob = math.nan
+        # python 3: maxprob = math.nan
+        maxprob = float('nan')
         testlabel = ''
         
         # otherwise, calculate the smoothed log probability for each label
